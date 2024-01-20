@@ -1,20 +1,27 @@
 #include "character.hpp"
 
-character::character(const std::string& path_to_texture, const std::string& path_to_run_texture, float speed)
+character::character(const std::string& path_to_texture,
+	const std::string& path_to_run_texture,
+	float speed, 
+	std::uint16_t frame_count,
+	std::uint32_t frame_spacing)
 	: movement_speed(speed)
 {
 
 	idle_station.characterTexture.loadFromFile(path_to_texture);
 
+	std::cout << path_to_texture << std::endl;
 	idle_station.frameWidth = idle_station.characterTexture.getSize().x / 6;
+	std::cout << idle_station.frameWidth << std::endl;
 	idle_station.frameHeight = idle_station.characterTexture.getSize().y;
-	idle_station.frameCount = 6;
-	idle_station.frameSpacing = 20;
+	std::cout << idle_station.frameHeight << std::endl;
+	idle_station.frameCount = frame_count;
+	idle_station.frameSpacing = 0;
 
 	idle_station.characterSprite = sf::Sprite(idle_station.characterTexture);
 	idle_station.characterSprite.setTextureRect(sf::IntRect(0, 0, idle_station.frameWidth,
 		idle_station.frameHeight));
-	idle_station.characterSprite.setScale(5.0f, 5.0f);
+	idle_station.characterSprite.setScale(3.0f, 3.0f);
 	idle_station.characterSprite.setPosition(0, 0);
 
 	/// 
@@ -40,6 +47,7 @@ void character::render_animation()
 		if (idle_station.clock.getElapsedTime().asSeconds() > idle_station.frameDuration)
 		{
 			idle_station.currentFrame = (idle_station.currentFrame + 1) % idle_station.frameCount;
+			std::cout << idle_station.currentFrame << std::endl;
 			idle_station.characterSprite.setTextureRect
 			(sf::IntRect(idle_station.currentFrame * idle_station.frameWidth, 0, idle_station.frameWidth,
 				idle_station.frameHeight));

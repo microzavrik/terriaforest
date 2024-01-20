@@ -21,7 +21,7 @@ struct character_animation_station
 	std::int32_t frameSpacing;
 
 	sf::Clock clock;
-	float frameDuration = 0.1f;
+	float frameDuration = 0.2f;
 	std::int32_t currentFrame = 0;
 };
 
@@ -35,12 +35,13 @@ enum class anim_station
 class character
 {
 public:
-	character(const std::string& path_to_texture, const std::string& path_to_run_texture, float speed);
+	character(const std::string& path_to_texture, const std::string& path_to_run_texture, float speed, std::uint16_t frame_count,
+		std::uint32_t frame_spacing);
 	void render_animation();
 	sf::Sprite& get_sprite();
 
 	void move(key_direction dx);
-	anim_station a_station;
+	anim_station a_station = anim_station::idle;
 private:
 	character_animation_station idle_station;
 	character_animation_station run_station;
