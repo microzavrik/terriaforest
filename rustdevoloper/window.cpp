@@ -34,3 +34,13 @@ void window::window_clear(sf::Color color)
 {
 	m_window.clear(color);
 }
+
+void window::set_frame_limit(float limit)
+{
+	m_window.setFramerateLimit(limit);
+}
+
+void window::set_title(const std::string& path)
+{
+	m_window.setTitle(path);
+}

@@ -1,83 +1,208 @@
 #include "character.hpp"
 
-character::character(const std::string& path_to_texture,
-	const std::string& path_to_run_texture,
-	float speed, 
-	std::uint16_t frame_count,
-	std::uint32_t frame_spacing)
-	: movement_speed(speed)
+#define TEST
+
+character::character(const animation_path& packet, float speed) : movement_speed(speed)
 {
 
-	idle_station.characterTexture.loadFromFile(path_to_texture);
+	animation_loader(idle_station_top, packet.top_idle.first, packet.top_idle.second);
+	animation_loader(run_station_top, packet.top_move.first, packet.top_move.second);
 
-	std::cout << path_to_texture << std::endl;
-	idle_station.frameWidth = idle_station.characterTexture.getSize().x / 6;
-	std::cout << idle_station.frameWidth << std::endl;
-	idle_station.frameHeight = idle_station.characterTexture.getSize().y;
-	std::cout << idle_station.frameHeight << std::endl;
-	idle_station.frameCount = frame_count;
-	idle_station.frameSpacing = 0;
+	animation_loader(idle_station_side_left, packet.slide_idle_left.first, packet.slide_idle_left.second);
+	animation_loader(run_station_side_left, packet.slide_move_left.first, packet.slide_move_left.second);
 
-	idle_station.characterSprite = sf::Sprite(idle_station.characterTexture);
-	idle_station.characterSprite.setTextureRect(sf::IntRect(0, 0, idle_station.frameWidth,
-		idle_station.frameHeight));
-	idle_station.characterSprite.setScale(3.0f, 3.0f);
-	idle_station.characterSprite.setPosition(0, 0);
+	animation_loader(idle_station_side_right, packet.slide_idle_right.first, packet.slide_idle_right.second);
+	animation_loader(run_station_slide_right, packet.slide_move_right.first, packet.slide_move_right.second);
 
-	/// 
+	animation_loader(idle_station_back, packet.back_idle.first, packet.back_idle.second);
+	animation_loader(run_station_back, packet.back_move.first, packet.back_move.second);
 
-	run_station.characterTexture.loadFromFile(path_to_run_texture);
-
-	run_station.frameWidth = run_station.characterTexture.getSize().x / 6;
-	run_station.frameHeight = run_station.characterTexture.getSize().y;
-	run_station.frameCount = 6;
-	run_station.frameSpacing = 20;
-
-	run_station.characterSprite = sf::Sprite(run_station.characterTexture);
-	run_station.characterSprite.setTextureRect(sf::IntRect(0, 0, run_station.frameWidth,
-		run_station.frameHeight));
-	run_station.characterSprite.setScale(5.0f, 5.0f);
-	run_station.characterSprite.setPosition(0, 0);
+#ifndef TEST
+	animation_loader(test_animation, packet.test_sprite.first, packet.test_sprite.second);
+#endif
 }
 
 void character::render_animation()
 {
-	if (a_station == anim_station::idle)
+#ifndef TEST
+	if (test_animation.clock.getElapsedTime().asSeconds() > test_animation.frameDuration)
 	{
-		if (idle_station.clock.getElapsedTime().asSeconds() > idle_station.frameDuration)
+		test_animation.currentFrame = (test_animation.currentFrame + 1) % test_animation.frameCount;
+
+		test_animation.characterSprite.setTextureRect(sf::IntRect(test_animation.currentFrame * test_animation.frameWidth, 0,
+			test_animation.frameWidth, test_animation.frameHeight));
+
+		std::cout << "Frame: " << test_animation.currentFrame << std::endl;
+
+		test_animation.clock.restart();
+	}
+	return;
+#endif
+	if (a_station == anim_station::idle && current_direction == key_direction::Up)
+	{
+		if (idle_station_back.clock.getElapsedTime().asSeconds() > idle_station_top.frameDuration)
 		{
-			idle_station.currentFrame = (idle_station.currentFrame + 1) % idle_station.frameCount;
-			std::cout << idle_station.currentFrame << std::endl;
-			idle_station.characterSprite.setTextureRect
-			(sf::IntRect(idle_station.currentFrame * idle_station.frameWidth, 0, idle_station.frameWidth,
-				idle_station.frameHeight));
-			idle_station.clock.restart();
+			idle_station_back.currentFrame = (idle_station_back.currentFrame + 1) % idle_station_back.frameCount;
+
+			idle_station_back.characterSprite.setTextureRect(sf::IntRect(idle_station_back.currentFrame * idle_station_back.frameWidth, 0,
+				idle_station_back.frameWidth, idle_station_back.frameHeight));
+
+			idle_station_back.clock.restart();
 		}
 	}
-	if (a_station == anim_station::run)
+
+
+	if (a_station == anim_station::run && current_direction == key_direction::Up)
 	{
-		if (run_station.clock.getElapsedTime().asSeconds() > run_station.frameDuration)
+		if (run_station_back.clock.getElapsedTime().asSeconds() > run_station_back.frameDuration)
 		{
-			run_station.currentFrame = (run_station.currentFrame + 1) % run_station.frameCount;
-			run_station.characterSprite.setTextureRect
-			(sf::IntRect(run_station.currentFrame * run_station.frameWidth, 0, run_station.frameWidth,
-				run_station.frameHeight));
-			run_station.clock.restart();
+			run_station_back.currentFrame = (run_station_back.currentFrame + 1) % run_station_back.frameCount;
+
+			run_station_back.characterSprite.setTextureRect(sf::IntRect(run_station_back.currentFrame * run_station_back.frameWidth, 0,
+				run_station_back.frameWidth, run_station_back.frameHeight));
+
+			run_station_back.clock.restart();
+		}
+	}
+
+
+	/////////////////////////////////
+
+
+	if (a_station == anim_station::idle && current_direction == key_direction::Down)
+	{
+		if (idle_station_top.clock.getElapsedTime().asSeconds() > idle_station_top.frameDuration)
+		{
+			idle_station_top.currentFrame = (idle_station_top.currentFrame + 1) % idle_station_top.frameCount;
+
+			idle_station_top.characterSprite.setTextureRect(sf::IntRect(idle_station_top.currentFrame * idle_station_top.frameWidth, 0,
+				idle_station_top.frameWidth, idle_station_top.frameHeight));
+
+			idle_station_top.clock.restart();
+		}
+	}
+
+
+	if (a_station == anim_station::run && current_direction == key_direction::Down)
+	{
+		if (run_station_top.clock.getElapsedTime().asSeconds() > run_station_top.frameDuration)
+		{
+			run_station_top.currentFrame = (run_station_top.currentFrame + 1) % run_station_top.frameCount;
+
+			run_station_top.characterSprite.setTextureRect(sf::IntRect(run_station_top.currentFrame * run_station_top.frameWidth, 0,
+				run_station_top.frameWidth, run_station_top.frameHeight));
+
+			run_station_top.clock.restart();
+		}
+	}
+
+
+
+	///////////////////////////////////////////
+
+
+	if (a_station == anim_station::idle && current_direction == key_direction::Left)
+	{
+		if (idle_station_side_left.clock.getElapsedTime().asSeconds() > idle_station_side_left.frameDuration)
+		{
+			idle_station_side_left.currentFrame = (idle_station_side_left.currentFrame + 1) % idle_station_side_left.frameCount;
+
+			idle_station_side_left.characterSprite.setTextureRect(sf::IntRect(idle_station_side_left.currentFrame * idle_station_side_left.frameWidth, 0,
+				idle_station_side_left.frameWidth, idle_station_side_left.frameHeight));
+
+			idle_station_side_left.clock.restart();
+		}
+	}
+
+
+	if (a_station == anim_station::run && current_direction == key_direction::Left)
+	{
+		if (run_station_side_left.clock.getElapsedTime().asSeconds() > run_station_side_left.frameDuration)
+		{
+			run_station_side_left.currentFrame = (run_station_side_left.currentFrame + 1) % run_station_side_left.frameCount;
+
+			run_station_side_left.characterSprite.setTextureRect(sf::IntRect(run_station_side_left.currentFrame * run_station_side_left.frameWidth, 0,
+				run_station_side_left.frameWidth, run_station_side_left.frameHeight));
+
+			run_station_side_left.clock.restart();
+		}
+	}
+
+	//////////////////////////////////////////////
+
+	if (a_station == anim_station::idle && current_direction == key_direction::Right)
+	{
+		if (idle_station_side_right.clock.getElapsedTime().asSeconds() > idle_station_side_right.frameDuration)
+		{
+			idle_station_side_right.currentFrame = (idle_station_side_right.currentFrame + 1) % idle_station_side_right.frameCount;
+
+			idle_station_side_right.characterSprite.setTextureRect(sf::IntRect(idle_station_side_right.currentFrame * idle_station_side_right.frameWidth, 0,
+				idle_station_side_right.frameWidth, idle_station_side_right.frameHeight));
+
+			idle_station_side_right.clock.restart();
+	}
+	}
+
+
+	if (a_station == anim_station::run && current_direction == key_direction::Right)
+	{
+		if (run_station_slide_right.clock.getElapsedTime().asSeconds() > run_station_slide_right.frameDuration)
+		{
+			run_station_slide_right.currentFrame = (run_station_slide_right.currentFrame + 1) % run_station_slide_right.frameCount;
+
+			run_station_slide_right.characterSprite.setTextureRect(sf::IntRect(run_station_slide_right.currentFrame * run_station_slide_right.frameWidth, 0,
+				run_station_slide_right.frameWidth, run_station_slide_right.frameHeight));
+
+			run_station_slide_right.clock.restart();
+
+			// std::cout << "Run Move | Change animation" << std::endl;
 		}
 	}
 }
 
 sf::Sprite& character::get_sprite()
 {
-	switch (a_station)
-	{
-	case anim_station::idle:
-		return idle_station.characterSprite;
-	case anim_station::run:
-		return run_station.characterSprite;
+#ifndef TEST
+	return test_animation.characterSprite;
+#endif
+	if (a_station == anim_station::idle && current_direction == key_direction::Up) {
+		return idle_station_back.characterSprite;
+	}
+	if (a_station == anim_station::run && current_direction == key_direction::Up) {
+		return run_station_back.characterSprite;
 	}
 
-	return idle_station.characterSprite;
+	///////////////////
+
+	if (a_station == anim_station::idle && current_direction == key_direction::Right) {
+		return idle_station_side_right.characterSprite;
+	}
+	if (a_station == anim_station::run && current_direction == key_direction::Right) {
+		// std::cout << "Return Run Right animation" << std::endl;
+		return run_station_slide_right.characterSprite;
+	}
+
+	///////////////////
+
+
+	if (a_station == anim_station::idle && current_direction == key_direction::Left) {
+		return idle_station_side_left.characterSprite;
+	}
+	if (a_station == anim_station::run && current_direction == key_direction::Left) {
+		return run_station_side_left.characterSprite;
+	}
+
+
+	//////////////////////
+
+	if (a_station == anim_station::idle && current_direction == key_direction::Down) {
+		return idle_station_top.characterSprite;
+	}
+	if (a_station == anim_station::run && current_direction == key_direction::Down) {
+		return run_station_top.characterSprite;
+	}
+
+	return idle_station_top.characterSprite;
 }
 
 void character::move(key_direction dx)
@@ -89,48 +214,115 @@ void character::move(key_direction dx)
 		{
 			a_station = anim_station::run;
 		}
-		idle_station.characterSprite.move(0, -movement_speed);
-		run_station.characterSprite.move(0, -movement_speed);
+		current_direction = key_direction::Up;
+		update_animation_position(key_direction::Up);
 		break;
 	case key_direction::Down:
 		if (a_station != anim_station::run)
 		{
 			a_station = anim_station::run;
 		}
-		idle_station.characterSprite.move(0, movement_speed);
-		run_station.characterSprite.move(0, movement_speed);
+
+		current_direction = key_direction::Down;
+		update_animation_position(key_direction::Down);
 		break;
 	case key_direction::Right:
 		if (a_station != anim_station::run)
 		{
 			a_station = anim_station::run;
 		}
-		if (current_direction != key_direction::Right)
-		{
-			current_direction = key_direction::Right;
-			idle_station.characterSprite.setScale(5.0f, 5.0f);
-			idle_station.characterSprite.setOrigin(idle_station.characterSprite.getLocalBounds().width / 2, idle_station.characterSprite.getLocalBounds().height / 2);
-			run_station.characterSprite.setScale(5.0f, 5.0f);
-			run_station.characterSprite.setOrigin(run_station.characterSprite.getLocalBounds().width / 2, run_station.characterSprite.getLocalBounds().height / 2);
-		}
-		idle_station.characterSprite.move(movement_speed, 0);
-		run_station.characterSprite.move(movement_speed, 0);
+		current_direction = key_direction::Right;
+		update_animation_position(key_direction::Right);
 		break;
 	case key_direction::Left:
 		if (a_station != anim_station::run)
 		{
 			a_station = anim_station::run;
 		}
-		if (current_direction != key_direction::Left)
-		{
-			current_direction = key_direction::Left;
-			idle_station.characterSprite.setScale(-5.0f, 5.0f);
-			idle_station.characterSprite.setOrigin(idle_station.characterSprite.getLocalBounds().width / 2, idle_station.characterSprite.getLocalBounds().height / 2);
-			run_station.characterSprite.setScale(-5.0f, 5.0f);
-			run_station.characterSprite.setOrigin(run_station.characterSprite.getLocalBounds().width / 2, run_station.characterSprite.getLocalBounds().height / 2);
-		}
-		idle_station.characterSprite.move(-movement_speed, 0);
-		run_station.characterSprite.move(-movement_speed, 0);
+		current_direction = key_direction::Left;
+		update_animation_position(key_direction::Left);
+		break;
+	}
+}
+
+void character::animation_loader(character_animation_station& station, const std::string& path, const std::uint16_t frames)
+{
+	station.characterTexture.loadFromFile(path);
+
+	station.frameWidth = station.characterTexture.getSize().x / frames;
+	station.frameHeight = station.characterTexture.getSize().y;
+	station.frameCount = frames;
+	station.frameSpacing = 20;
+
+	station.characterSprite = sf::Sprite(station.characterTexture);
+	station.characterSprite.setTextureRect(sf::IntRect(0, 0, station.frameWidth,
+		station.frameHeight));
+	station.characterSprite.setScale(3.0f, 3.0f);
+	station.characterSprite.setPosition(0, 0);
+
+	if (path == "sprite.png") {
+		station.characterSprite.setPosition(30, 30);
+	}
+
+	std::cout << "Load sprite: " << path << " | [SIZE: " << station.frameHeight << "x" << station.frameWidth << "]"
+		<< std::endl;
+}
+
+void character::update_animation_position(key_direction dx)
+{
+	switch (dx)
+	{
+	case key_direction::Up:
+		idle_station_side_left.characterSprite.move(0, -movement_speed);
+		run_station_side_left.characterSprite.move(0, -movement_speed);
+
+		idle_station_side_right.characterSprite.move(0, -movement_speed);
+		run_station_slide_right.characterSprite.move(0, -movement_speed);
+
+		idle_station_back.characterSprite.move(0, -movement_speed);
+		run_station_back.characterSprite.move(0, -movement_speed);
+
+		idle_station_top.characterSprite.move(0, -movement_speed);
+		run_station_top.characterSprite.move(0, -movement_speed);
+		break;
+	case key_direction::Down:
+		idle_station_side_left.characterSprite.move(0, movement_speed);
+		run_station_side_left.characterSprite.move(0, movement_speed);
+
+		idle_station_side_right.characterSprite.move(0, movement_speed);
+		run_station_slide_right.characterSprite.move(0, movement_speed);
+
+		idle_station_back.characterSprite.move(0, movement_speed);
+		run_station_back.characterSprite.move(0, movement_speed);
+
+		idle_station_top.characterSprite.move(0, movement_speed);
+		run_station_top.characterSprite.move(0, movement_speed);
+		break;
+	case key_direction::Right:
+		idle_station_side_left.characterSprite.move(movement_speed, 0);
+		run_station_side_left.characterSprite.move(movement_speed, 0);
+
+		idle_station_side_right.characterSprite.move(movement_speed, 0);
+		run_station_slide_right.characterSprite.move(movement_speed, 0);
+
+		idle_station_back.characterSprite.move(movement_speed, 0);
+		run_station_back.characterSprite.move(movement_speed, 0);
+
+		idle_station_top.characterSprite.move(movement_speed, 0);
+		run_station_top.characterSprite.move(movement_speed, 0);
+		break;
+	case key_direction::Left:
+		idle_station_side_left.characterSprite.move(-movement_speed, 0);
+		run_station_side_left.characterSprite.move(-movement_speed, 0);
+
+		idle_station_side_right.characterSprite.move(-movement_speed, 0);
+		run_station_slide_right.characterSprite.move(-movement_speed, 0);
+
+		idle_station_back.characterSprite.move(-movement_speed, 0);
+		run_station_back.characterSprite.move(-movement_speed, 0);
+
+		idle_station_top.characterSprite.move(-movement_speed, 0);
+		run_station_top.characterSprite.move(-movement_speed, 0);
 		break;
 	}
 }
