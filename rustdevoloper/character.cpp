@@ -38,6 +38,26 @@ void character::render_animation()
 	}
 	return;
 #endif
+
+	if (current_direction == key_direction::Right && animation_attack_running && att_type == attack_type::weapon_equip_slide)
+	{
+		if (weapon_equip_slide_anim.clock.getElapsedTime().asSeconds() > weapon_equip_slide_anim.frameDuration)
+		{
+			weapon_equip_slide_anim.currentFrame = (weapon_equip_slide_anim.currentFrame + 1) % weapon_equip_slide_anim.frameCount;
+
+			weapon_equip_slide_anim.characterSprite.setTextureRect(sf::IntRect(weapon_equip_slide_anim.currentFrame * weapon_equip_slide_anim.frameWidth, 0,
+				weapon_equip_slide_anim.frameWidth, weapon_equip_slide_anim.frameHeight));
+
+			if (weapon_equip_slide_anim.currentFrame == weapon_equip_slide_anim.frameCount) {
+				animation_attack_running = false;
+				return;
+			}
+
+			weapon_equip_slide_anim.clock.restart();
+		}
+	}
+
+
 	if (a_station == anim_station::idle && current_direction == key_direction::Up)
 	{
 		if (idle_station_back.clock.getElapsedTime().asSeconds() > idle_station_top.frameDuration)
@@ -165,6 +185,16 @@ sf::Sprite& character::get_sprite()
 #ifndef TEST
 	return test_animation.characterSprite;
 #endif
+
+	// attack
+
+	
+	if ( current_direction == key_direction::Right && att_type == attack_type::weapon_equip_slide) {
+		return weapon_equip_slide_anim.characterSprite;
+	}
+
+	/// move 
+
 	if (a_station == anim_station::idle && current_direction == key_direction::Up) {
 		return idle_station_back.characterSprite;
 	}
@@ -207,6 +237,10 @@ sf::Sprite& character::get_sprite()
 
 void character::move(key_direction dx)
 {
+	if (animation_attack_running) {
+		return;
+	}
+
 	switch (dx)
 	{
 	case key_direction::Up:

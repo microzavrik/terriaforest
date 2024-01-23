@@ -35,6 +35,11 @@ enum class anim_station
 	attack
 };
 
+enum class attack_type
+{
+	weapon_equip_slide
+};
+
 class character
 {
 public:
@@ -43,9 +48,12 @@ public:
 	sf::Sprite& get_sprite();
 	void animation_loader(character_animation_station& station, const std::string& path, const std::uint16_t frames);
 
+	void attack();
 	void update_animation_position(key_direction dx);
 	void move(key_direction dx);
 	anim_station a_station = anim_station::idle;
+	bool animation_attack_running = false;
+	attack_type att_type;
 private:
 	character_animation_station idle_station_back;
 	character_animation_station run_station_back;
@@ -58,6 +66,9 @@ private:
 	
 	character_animation_station idle_station_top;
 	character_animation_station run_station_top;
+
+	character_animation_station weapon_equip_slide_anim;
+	
 
 #ifndef TEST
 	character_animation_station test_animation;
