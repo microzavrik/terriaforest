@@ -151,6 +151,7 @@
     <ClInclude Include="character.hpp" />
     <ClInclude Include="colision_object.hpp" />
     <ClInclude Include="map.hpp" />
+    <ClInclude Include="utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="window.hpp" />

@@ -1,0 +1,2 @@
+0 ./MapObjects/Screenshot_1.png
+T Trees.png

@@ -11,6 +11,8 @@ public:
 
 	std::int32_t get_x() { return m_xcoord; }
 	std::int32_t get_y() { return m_ycoord; }
+	sf::Sprite& get_sprite() { return m_sprite; }
+	bool get_status() { return m_colision_on; }
 private:
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;

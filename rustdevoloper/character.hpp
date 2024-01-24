@@ -4,6 +4,7 @@
 
 #include "include.hpp"
 #include "animation_path.hpp"
+#include "map.hpp"
 
 enum class key_direction
 {
@@ -43,7 +44,7 @@ enum class attack_type
 class character
 {
 public:
-	character(const animation_path& packet, float speed);
+	character(const animation_path& packet, float speed, map& map_object);
 	void render_animation();
 	sf::Sprite& get_sprite();
 	void animation_loader(character_animation_station& station, const std::string& path, const std::uint16_t frames);
@@ -55,6 +56,8 @@ public:
 	bool animation_attack_running = false;
 	attack_type att_type;
 private:
+	map& m_map;
+
 	character_animation_station idle_station_back;
 	character_animation_station run_station_back;
 	

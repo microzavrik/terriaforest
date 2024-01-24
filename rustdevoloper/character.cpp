@@ -2,7 +2,7 @@
 
 #define TEST
 
-character::character(const animation_path& packet, float speed) : movement_speed(speed)
+character::character(const animation_path& packet, float speed, map& map_object) : movement_speed(speed), m_map(map_object)
 {
 
 	animation_loader(idle_station_top, packet.top_idle.first, packet.top_idle.second);

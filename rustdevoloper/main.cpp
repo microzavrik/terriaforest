@@ -9,7 +9,7 @@ void main()
 {
 	window main_window(800, 600, "Terria Forest");
 	main_window.set_icon("666.png", 32, 32);
-	map world("config.txt", "first_layer.txt");
+	map world("./CFG/config.txt", "./CFG/first_layer.txt", "./CFG/second_layer.txt", "./CFG/colision_list.txt");
 
 	for (size_t i = 0; i < world.map_data_cells.size(); i++)
 	{
@@ -59,7 +59,7 @@ void main()
 
 	float scale = 0.5f;
 
-	character hero(path, 4.0f);
+	character hero(path, 4.0f, world);
 
 	sf::Clock clock;
 	float want_fps = 50;
@@ -123,10 +123,26 @@ void main()
 					main_window.draw_sprite(sprite);
 				}
 			}
-
-			spriteTree.setPosition(2 * spacing_x, 2 * spacing_y);
-			main_window.draw_sprite(spriteTree);
 		}
+
+		for (size_t i = 0; i < world.second_layer.size(); i++)
+		{
+			for (size_t j = 0; j < world.second_layer[i].size(); j++)
+			{
+				auto[result, index] = world.contains_pointer(world.second_layer[i][j]);
+
+				if (result)
+				{
+					sf::Sprite sprite;
+					sprite.setTexture(world.map_data_cells[index].texture);
+					sprite.setScale(3.5f, 3.5f);
+					sprite.setPosition(static_cast<int>(j), static_cast<int>(i ));
+
+					main_window.draw_sprite(sprite);
+				}
+			}
+		}
+
 
 		main_window.draw_sprite(hero.get_sprite());
 
