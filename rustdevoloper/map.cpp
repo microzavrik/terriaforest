@@ -22,12 +22,25 @@ map::map(const std::string& map_data_file, const std::string& first_layer_data)
 	size_t row = 0;
 	while (std::getline(first_layer_file, line))
 	{
+		first_layer.push_back({});
 		for (size_t i = 0; i < line.size(); i++)
 		{
-			first_layer[row][i] = line[i];
+			first_layer[row].push_back(line[i]);
 		}
 		row++;
 	}
+
+	std::cout << "Map image: " << std::endl;
+
+	for (size_t i = 0; i < first_layer.size(); i++)
+	{
+		for (size_t j = 0; j < first_layer[i].size(); j++)
+		{
+			std::cout << first_layer[i][j];
+		}
+		std::cout << std::endl;
+	}
+
 	first_layer_file.close();
 }
 

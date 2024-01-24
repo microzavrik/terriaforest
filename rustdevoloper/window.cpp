@@ -19,7 +19,7 @@ void window::set_icon(const std::string& path, std::int16_t width, std::int16_t 
 	m_window.setIcon(width, height, icon.getPixelsPtr());
 }
 
-void window::process_events()
+process_return_type window::process_events()
 {
 	sf::Event event;
 	while (m_window.pollEvent(event)) 
@@ -27,7 +27,18 @@ void window::process_events()
 		if (event.type == sf::Event::Closed) {
 			m_window.close();
 		}
+
+		if (event.type == sf::Event::MouseButtonPressed)
+		{
+			if (event.mouseButton.button == sf::Mouse::Right)
+			{
+				std::cout << "Attack pressed" << std::endl;
+				return process_return_type::pressed_right_mouse_button;
+			}
+		}
 	}
+
+	return process_return_type::none;
 }
 
 void window::window_clear(sf::Color color)

@@ -32,6 +32,8 @@ void main()
 	path.back_idle = std::make_pair("./Assets/Characters/RedCharacter/BackIdle.png", DEFAULT_ANIMATION_FRAMES);
 	path.back_move = std::make_pair("./Assets/Characters/RedCharacter/BackMovement.png", DEFAULT_ANIMATION_FRAMES);
 
+	path.weapon_equip_slide = std::make_pair("./Assets/Characters/RedCharacter/WeaponEquipSlide.png", DEFAULT_ANIMATION_FRAMES);
+
 #ifndef TEST
 
 	int n;
@@ -42,6 +44,14 @@ void main()
 	path.test_sprite = std::make_pair("sprite.png", n);
 #endif
 
+	float initial_x = 0.0f;
+	float initial_y = 0.0f;
+	float x = initial_x, y = initial_y;
+	float spacing_x = 120.0f;
+	float spacing_y = 120.0f;
+
+	float scale = 0.5f;
+
 	character hero(path, 4.0f);
 
 	sf::Clock clock;
@@ -50,7 +60,15 @@ void main()
 	while (main_window.is_open())
 	{
 
-		main_window.process_events();
+		auto process_event_result = main_window.process_events();
+
+		switch (process_event_result)
+		{
+		case process_return_type::pressed_right_mouse_button:
+			hero.attack();
+			break;
+		}
+		
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
@@ -88,9 +106,28 @@ void main()
 
 				if (result)
 				{
-					main_window.draw_texture(world.map_data_cells[index].texture);
+
+					sf::Sprite sprite;
+					sprite.setTexture(world.map_data_cells[index].texture);
+					world.map_data_cells[index].texture.setSmooth(true);
+					sprite.setScale(0.3f, 0.3f);
+					sprite.setPosition(static_cast<int>(j * spacing_x), static_cast<int>(i * spacing_y));
+
+					main_window.draw_sprite(sprite);
+
+					if (i == 3 && j == 3)
+					{
+						sf::Texture tree_texture;
+						tree_texture.loadFromFile("Trees.png");
+						sf::Sprite sprite;
+						sprite.setScale(1.5f, 1.5f);
+						sprite.setTexture(tree_texture);
+						sprite.setPosition(3 * spacing_x, j * spacing_y);
+						main_window.draw_sprite(sprite);
+					}
 				}
 			}
+
 		}
 
 		main_window.draw_sprite(hero.get_sprite());
