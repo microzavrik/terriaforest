@@ -34,6 +34,13 @@ void main()
 
 	path.weapon_equip_slide = std::make_pair("./Assets/Characters/RedCharacter/WeaponEquipSlide.png", DEFAULT_ANIMATION_FRAMES);
 
+
+	sf::Texture tree_texture;
+	tree_texture.loadFromFile("Trees.png");
+	sf::Sprite spriteTree;
+	spriteTree.setTexture(tree_texture);
+	spriteTree.setScale(4.0f, 4.0f);
+
 #ifndef TEST
 
 	int n;
@@ -114,20 +121,11 @@ void main()
 					sprite.setPosition(static_cast<int>(j * spacing_x), static_cast<int>(i * spacing_y));
 
 					main_window.draw_sprite(sprite);
-
-					if (i == 3 && j == 3)
-					{
-						sf::Texture tree_texture;
-						tree_texture.loadFromFile("Trees.png");
-						sf::Sprite sprite;
-						sprite.setScale(1.5f, 1.5f);
-						sprite.setTexture(tree_texture);
-						sprite.setPosition(3 * spacing_x, j * spacing_y);
-						main_window.draw_sprite(sprite);
-					}
 				}
 			}
 
+			spriteTree.setPosition(2 * spacing_x, 2 * spacing_y);
+			main_window.draw_sprite(spriteTree);
 		}
 
 		main_window.draw_sprite(hero.get_sprite());
