@@ -1,9 +1,7 @@
 #include "colision_object.hpp"
 
-colision_object::colision_object(const std::string& ind, const std::string texture_path, std::int32_t x, std::int32_t y)
+colision_object::colision_object(const std::string& ind, std::int32_t x, std::int32_t y)
 {
-	m_texture.loadFromFile(texture_path);
-	m_sprite.setTexture(m_texture);
 	m_indificator = ind;
 
 	m_xcoord = x;

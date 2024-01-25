@@ -11,6 +11,8 @@ void main()
 	main_window.set_icon("666.png", 32, 32);
 	map world("./CFG/config.txt", "./CFG/first_layer.txt", "./CFG/second_layer.txt", "./CFG/colision_list.txt");
 
+	bool write_collision_object = false;
+
 	for (size_t i = 0; i < world.map_data_cells.size(); i++)
 	{
 		std::cout << world.map_data_cells[i].texture_pointer << std::endl;
@@ -101,6 +103,14 @@ void main()
 		{
 			hero.a_station = anim_station::idle;
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Home))
+		{
+			for (size_t i = 0; i < world.colision_objects.size(); i++)
+			{
+				std::cout << world.colision_objects[i].get_x() << " | " <<
+					world.colision_objects[i].get_y() << std::endl;
+			}
+		}
 
 		hero.render_animation();
 		main_window.window_clear(sf::Color::Black);
@@ -138,9 +148,15 @@ void main()
 					sprite.setScale(3.5f, 3.5f);
 					sprite.setPosition(static_cast<int>(j), static_cast<int>(i ));
 
+					if (!write_collision_object)
+					{
+						world.colision_objects.push_back(colision_object("T", sprite.getPosition().x, sprite.getPosition().y));
+					}
+
 					main_window.draw_sprite(sprite);
 				}
 			}
+			write_collision_object = false;
 		}
 
 

@@ -394,4 +394,8 @@ void character::update_animation_position(key_direction dx)
 		weapon_equip_slide_anim.characterSprite.move(-movement_speed, 0);
 		break;
 	}
+
+	std::cout << "Temp pos character: X - " << run_station_top.characterSprite.getPosition().x 
+		<< "| Y - " <<
+		run_station_top.characterSprite.getPosition().y << std::endl;
 }

@@ -53,6 +53,9 @@ map::map(const std::string& map_data_file, const std::string& first_layer_data,
 		for (size_t i = 0; i < line.size(); i++)
 		{
 			second_layer[row].push_back(line[i]);
+			if (line[i] != '_') {
+				colision_objects.push_back(colision_object(std::to_string(line[i]), i, row));
+			}
 		}
 		row++;
 	}
@@ -85,6 +88,13 @@ map::map(const std::string& map_data_file, const std::string& first_layer_data,
 
 
 	std::cout << "==========================================" << std::endl;
+
+	std::cout << "Colision container:" << std::endl;
+	for (size_t i = 0; i < colision_objects.size(); i++)
+	{
+		std::cout << colision_objects[i].get_ind() << " | " << "X: " << colision_objects[i].get_x() << " | Y - " <<
+			colision_objects[i].get_y() << std::endl;
+	}
 
 	second_layer_file.close();
 }
